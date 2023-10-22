@@ -35,6 +35,11 @@ h3 {
   margin-bottom: 10px;
 }
 
+hr {
+  clear: both;
+  margin-bottom: 10px;
+}
+
 a.active {
   padding: 0px 2px;
   border: 1px solid black;
@@ -102,12 +107,30 @@ a.active {
   margin-bottom: 10px;
 }
 
+.list {
+  float: left;
+  width: 300px;
+  height: 135px;
+  border-radius: 15px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.list li {
+  margin-top: 32px;
+}
+
+.grey {
+  background-color: #E5E4E2;
+}
+
 .blue {
   background-color: #6EADFF;
 }
 
 .new {
   background-color: #E5E4E2;
+  cursor: pointer;
 }
 
 div.blue:hover {
@@ -122,18 +145,6 @@ div.new:hover {
 
 .board li {
   margin-top: 32px;
-}
-
-.lists {
-}
-
-.list {
-  float: left;
-  background-color: lightgray;
-  width: 300px;
-  border-radius: 5px;
-  margin-right: 10px;
-  margin-bottom: 10px;
 }
 
 .goal .close {
@@ -170,6 +181,23 @@ div.new:hover {
   text-align: left;
   display: block;
   margin: 0 0 5px 3px;
+}
+
+.list-btn {
+  padding: 10px 20px;
+  margin-left: 2px;
+  margin-right: 2px;
+  border: 0px;
+  border-radius: 5px;
+  background: #1434A4;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.list-btn:hover {
+  transform: scale(0.98);
+  background: #0d226e;
 }
 
 .btn {

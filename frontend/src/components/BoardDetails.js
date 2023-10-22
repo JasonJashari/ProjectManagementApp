@@ -8,8 +8,9 @@ export const BoardDetails = () => {
 
     const { boardId } = useParams()
     const [title, setTitle] = useState('')
-    // const [board, setBoard] = useState({})
     const [outlet, setOutlet] = useState(false)
+    const [showListForm, setShowListForm] = useState(false)
+    const [listTitle, setListTitle] = useState('')
     const auth = useAuth()
     const navigate = useNavigate()
 
@@ -24,6 +25,11 @@ export const BoardDetails = () => {
         } catch (error) {
             console.log('Cannot delete board', error)
         }
+    }
+
+    const handleNewList = () => {
+        setShowListForm(!showListForm)
+        console.log(showListForm)
     }
 
     const handleOutlet = () => {
@@ -63,10 +69,44 @@ export const BoardDetails = () => {
                 </button>
             </Link>
         </div>
+
         
         <section className='heading'>
             <h1>{title}</h1>
         </section>
+
+        <ul>
+            { showListForm ? (
+                <section>
+            <div className='form-group list grey'>
+                <li>
+                    <form>
+                        <input 
+                            type='text'
+                            className='form-control'
+                            placeholder='Enter list title...'
+                            value={listTitle}
+                            onChange={(e) => setListTitle(e.target.value)}
+                        />
+                        <button className='list-btn'>
+                            Add list
+                        </button>
+                        <button onClick={handleNewList} className='list-btn'>
+                            Cancel
+                        </button>
+                    </form>
+                </li>
+            </div>
+            </section> ) : (
+                <section>
+            <div className='list new'>
+                <li onClick={handleNewList}>Add a list</li>
+            </div>
+            </section>
+            )}
+            
+        </ul>
+        <hr />
 
         <div className='form-group'>
             <button onClick={handleOutlet} className='btn'>Update Board Title</button>
