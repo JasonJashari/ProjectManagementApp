@@ -7,6 +7,7 @@ require('dotenv').config();
 
 const List = require('../models/list');
 const User = require('../models/user');
+const Board = require('../models/board');
 
 router.get('/', checkAuth, (req, res, next) => {
     List.find({ user: req.userData.userId })
@@ -34,33 +35,37 @@ router.get('/', checkAuth, (req, res, next) => {
     });
 });
 
-router.post('/', checkAuth, (req, res, next) => {
-    const list = new List({
-        _id: new mongoose.Types.ObjectId(),
-        user: req.userData.userId,
-        title: req.body.title
-    });
-    list.save()
-    .then(result => {
-        res.status(201).json({
-            message: 'List created!',
-            createdList: {
-                _id: result._id,
-                title: result.title,
-            },
-            request: {
-                type: 'GET',
-                url: process.env.LIST_URL + result._id
-            }
+router.post('/', checkAuth, asyncHandler(async (req, res, next) => {
+    const { boardId, title } = req.body;
+    const user = await User.findById(req.userData.userId).exec();
+
+    if (!boardId || !title){
+        return res.status(400).json({
+            message: 'Please provide title and boardId for the list'
         });
-    })
-    .catch(err => {
-        console.log(err);
-        res.status(500).json({
-            error: err
+    }
+
+    // get the board
+    try {
+        const board = await Board.findById(boardId).exec();
+        if (!board) {
+            return res.status(404).json({
+                message: 'Board not found'
+            });
+        }
+        // create a list
+        board.lists.push({ user: user, title: title });
+        await board.save();
+        return res.status(201).json({
+            message: 'List created!'
         });
-    });
-});
+    } catch (error) {
+        return res.status(400).json({
+            message: 'Invalid board ID'
+        });
+    }
+
+}));
 
 router.get('/:listId', checkAuth, asyncHandler(async (req, res, next) => {
 
