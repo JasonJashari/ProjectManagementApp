@@ -1,4 +1,4 @@
-import { Outlet, useNavigate, useParams } from "react-router"
+import { useNavigate, useParams } from "react-router"
 import { Link } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { useAuth } from "../context/auth"
@@ -13,9 +13,35 @@ export const BoardDetails = () => {
 
     const [lists, setLists] = useState([])
     const [title, setTitle] = useState('')
-    const [outlet, setOutlet] = useState(false)
+    const [showUpdateForm, setShowUpdateForm] = useState(false)
     const [showListForm, setShowListForm] = useState(false)
     const [listTitle, setListTitle] = useState('')
+
+    const handleUpdateTitle = async (e) => {
+        e.preventDefault()
+        if (!title){
+            return
+        }
+
+        try {
+            await axios.patch(`/boards/${boardId}`, [
+                {
+                    "propName": 'title',
+                    "value": title
+                }
+            ],
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${auth.token}`
+                    }
+                }
+            )
+            setShowUpdateForm(false)
+        } catch (error) {
+            console.log('Cannot update board title at this time')
+        }
+    }
 
     const handleAddList = async (e) => {
         e.preventDefault()
@@ -38,9 +64,10 @@ export const BoardDetails = () => {
                 ...lists,
                 {title: response.data.title}
             ])
+            setShowListForm(false)
 
         } catch (error) {
-            console.log('ERROR: Cannot create a new list', error)
+            console.log('ERROR: Cannot create a new list')
         }
     }
 
@@ -61,16 +88,9 @@ export const BoardDetails = () => {
         setShowListForm(!showListForm)
     }
 
-    const handleOutlet = () => {
-        // update outlet
-        setOutlet(!outlet)
+    const handleUpdate = () => {
+        setShowUpdateForm(!showUpdateForm)
     }
-
-    useEffect(() => {
-        // action on update of outlet
-        outlet && navigate('update', { replace: true })
-        !outlet && navigate('', { replace: true })
-    }, [outlet, navigate])
 
     useEffect(() => {
         const fetchBoard = async () => {
@@ -93,15 +113,32 @@ export const BoardDetails = () => {
     <div>
         
         <Link to='/'>
-            <button className='btn back'>
+            <button className='btn left'>
                 Back
             </button>
         </Link>
 
-        
-        <section className='title'>
-            <h1>{title}</h1>
-        </section>
+        {showUpdateForm ? (
+            <section className='title'>
+                    <form onSubmit={handleUpdateTitle} className='form-update'>
+                        <input 
+                            type='text'
+                            id='boardTitle'
+                            autoFocus
+                            placeholder='Enter board title'
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                        />
+                        <button type='submit' className='update'>
+                            Update
+                        </button>
+                    </form>
+            </section>
+        ) : (
+            <section className='title'>
+                <h1>{title}</h1>
+            </section>
+        )}
 
         <ul>
             {lists.map(list => (
@@ -114,19 +151,19 @@ export const BoardDetails = () => {
 
             { showListForm ? (
                 <section>
-                    <div className='form-group list grey'>
+                    <div className='list grey'>
                         <li>
-                            <form>
+                            <form onSubmit={handleAddList} className='form-group'>
                                 <input 
                                     type='text'
+                                    id='listTitle'
                                     required
                                     autoFocus
-                                    className='form-control'
                                     placeholder='Enter list title...'
                                     value={listTitle}
                                     onChange={(e) => setListTitle(e.target.value)}
                                 />
-                                <button onClick={handleAddList} className='list-btn'>
+                                <button type='submit' className='list-btn'>
                                     Add list
                                 </button>
                                 <button onClick={handleNewList} className='list-btn'>
@@ -148,13 +185,11 @@ export const BoardDetails = () => {
         <hr />
 
         <div className='form-group'>
-            <button onClick={handleOutlet} className='btn'>Update Board Title</button>
+            <button onClick={handleUpdate} className='btn'>Update Board Title</button>
         </div>
         <div className='form-group'>
             <button onClick={handleDelete} className='btn red'>Delete Board</button>
         </div>
-
-        <Outlet context={[setTitle, handleOutlet]} />
     </div>
   )
 }
