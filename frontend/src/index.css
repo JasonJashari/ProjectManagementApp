@@ -176,7 +176,6 @@ div.new:hover {
 
 .form-update input {
   width: 25%;
-  padding: 7px;
   border: 1px solid #e6e6e6;
   border-radius: 5px;
   font-family: inherit;
@@ -204,6 +203,11 @@ div.new:hover {
   margin: 0 0 5px 3px;
 }
 
+.form-small {
+  width: 90%;
+  margin: 0 auto;
+}
+
 .list-btn {
   padding: 10px 20px;
   margin-left: 2px;
@@ -216,13 +220,12 @@ div.new:hover {
   cursor: pointer;
 }
 
-.list-btn:hover {
+.list-btn:hover, .update:hover {
   transform: scale(0.98);
-  background: #b8bccd;
+  background: #09174b;
 }
 
 .update {
-  padding: 7px;
   border: 1px solid #e6e6e6;
   border-radius: 5px;
   background: #1434A4;
@@ -272,7 +275,7 @@ div.new:hover {
   margin-bottom: 20px;
 }
 
-.btn:hover, .update:hover {
+.btn:hover {
   transform: scale(0.98);
 }
 

@@ -13,13 +13,14 @@ export const BoardDetails = () => {
 
     const [lists, setLists] = useState([])
     const [title, setTitle] = useState('')
+    const [newTitle, setNewTitle] = useState('')
     const [showUpdateForm, setShowUpdateForm] = useState(false)
     const [showListForm, setShowListForm] = useState(false)
     const [listTitle, setListTitle] = useState('')
 
     const handleUpdateTitle = async (e) => {
         e.preventDefault()
-        if (!title){
+        if (!newTitle){
             return
         }
 
@@ -27,7 +28,7 @@ export const BoardDetails = () => {
             await axios.patch(`/boards/${boardId}`, [
                 {
                     "propName": 'title',
-                    "value": title
+                    "value": newTitle
                 }
             ],
                 {
@@ -38,6 +39,7 @@ export const BoardDetails = () => {
                 }
             )
             setShowUpdateForm(false)
+            setTitle(newTitle)
         } catch (error) {
             console.log('Cannot update board title at this time')
         }
@@ -92,6 +94,11 @@ export const BoardDetails = () => {
         setShowUpdateForm(!showUpdateForm)
     }
 
+    const handleUpdateCancel = () => {
+        setShowUpdateForm(!showUpdateForm)
+        setNewTitle(title)
+    }
+
     useEffect(() => {
         const fetchBoard = async () => {
             try {
@@ -102,6 +109,7 @@ export const BoardDetails = () => {
                 })
                 setTitle(response.data.title)
                 setLists(response.data.lists)
+                setNewTitle(response.data.title)
             } catch (error) {
                 navigate('/')
             }
@@ -120,19 +128,21 @@ export const BoardDetails = () => {
 
         {showUpdateForm ? (
             <section className='title'>
+            <h1>
                     <form onSubmit={handleUpdateTitle} className='form-update'>
                         <input 
                             type='text'
                             id='boardTitle'
                             autoFocus
                             placeholder='Enter board title'
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
+                            value={newTitle}
+                            onChange={(e) => setNewTitle(e.target.value)}
                         />
                         <button type='submit' className='update'>
                             Update
                         </button>
                     </form>
+                    </h1>
             </section>
         ) : (
             <section className='title'>
@@ -153,7 +163,7 @@ export const BoardDetails = () => {
                 <section>
                     <div className='list grey'>
                         <li>
-                            <form onSubmit={handleAddList} className='form-group'>
+                            <form onSubmit={handleAddList} className='form-group form-small'>
                                 <input 
                                     type='text'
                                     id='listTitle'
@@ -184,9 +194,20 @@ export const BoardDetails = () => {
         </ul>
         <hr />
 
-        <div className='form-group'>
-            <button onClick={handleUpdate} className='btn'>Update Board Title</button>
-        </div>
+        {showUpdateForm ? (
+            <div className='form-group'>
+                <button onClick={handleUpdateCancel} className='btn'>
+                    Cancel
+                </button>
+            </div>
+        ) : (
+            <div className='form-group'>
+                <button onClick={handleUpdate} className='btn'>
+                    Update board title
+                </button>
+            </div>
+        )}
+    
         <div className='form-group'>
             <button onClick={handleDelete} className='btn red'>Delete Board</button>
         </div>
