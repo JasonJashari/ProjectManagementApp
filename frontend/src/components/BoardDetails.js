@@ -3,16 +3,46 @@ import { Link } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { useAuth } from "../context/auth"
 import axios from "../api/axios"
+import { List } from "./List"
 
 export const BoardDetails = () => {
 
+    const auth = useAuth()
+    const navigate = useNavigate()
     const { boardId } = useParams()
+
+    const [lists, setLists] = useState([])
     const [title, setTitle] = useState('')
     const [outlet, setOutlet] = useState(false)
     const [showListForm, setShowListForm] = useState(false)
     const [listTitle, setListTitle] = useState('')
-    const auth = useAuth()
-    const navigate = useNavigate()
+
+    const handleAddList = async (e) => {
+        e.preventDefault()
+        if (!listTitle){
+            return
+        }
+
+        try {
+            const response = await axios.post('/lists',
+                JSON.stringify({ boardId, title: listTitle }),
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${auth.token}`
+                    }
+                }
+            )
+            // set list
+            setLists([
+                ...lists,
+                {title: response.data.title}
+            ])
+
+        } catch (error) {
+            console.log('ERROR: Cannot create a new list', error)
+        }
+    }
 
     const handleDelete = async () => {
         try {
@@ -29,7 +59,6 @@ export const BoardDetails = () => {
 
     const handleNewList = () => {
         setShowListForm(!showListForm)
-        console.log(showListForm)
     }
 
     const handleOutlet = () => {
@@ -52,7 +81,7 @@ export const BoardDetails = () => {
                     }
                 })
                 setTitle(response.data.title)
-                // setBoard(response.data)
+                setLists(response.data.lists)
             } catch (error) {
                 navigate('/')
             }
@@ -62,49 +91,59 @@ export const BoardDetails = () => {
 
   return (
     <div>
-        <div className='form-group'>
-            <Link to='/'>
-                <button className='btn'>
-                    Back
-                </button>
-            </Link>
-        </div>
+        
+        <Link to='/'>
+            <button className='btn back'>
+                Back
+            </button>
+        </Link>
 
         
-        <section className='heading'>
+        <section className='title'>
             <h1>{title}</h1>
         </section>
 
         <ul>
+            {lists.map(list => (
+                <div className='list blue'>
+                    <li>
+                        <List listTitle={list.title}/>
+                    </li>
+                </div>
+            ))}
+
             { showListForm ? (
                 <section>
-            <div className='form-group list grey'>
-                <li>
-                    <form>
-                        <input 
-                            type='text'
-                            className='form-control'
-                            placeholder='Enter list title...'
-                            value={listTitle}
-                            onChange={(e) => setListTitle(e.target.value)}
-                        />
-                        <button className='list-btn'>
-                            Add list
-                        </button>
-                        <button onClick={handleNewList} className='list-btn'>
-                            Cancel
-                        </button>
-                    </form>
-                </li>
-            </div>
-            </section> ) : (
+                    <div className='form-group list grey'>
+                        <li>
+                            <form>
+                                <input 
+                                    type='text'
+                                    required
+                                    autoFocus
+                                    className='form-control'
+                                    placeholder='Enter list title...'
+                                    value={listTitle}
+                                    onChange={(e) => setListTitle(e.target.value)}
+                                />
+                                <button onClick={handleAddList} className='list-btn'>
+                                    Add list
+                                </button>
+                                <button onClick={handleNewList} className='list-btn'>
+                                    Cancel
+                                </button>
+                            </form>
+                        </li>
+                    </div>
+                </section> ) : (
                 <section>
-            <div className='list new'>
-                <li onClick={handleNewList}>Add a list</li>
-            </div>
-            </section>
+                    <Link onClick={handleNewList}>
+                        <div className='list new'>
+                            <li>Add a list</li>
+                        </div>
+                    </Link>
+                </section>
             )}
-            
         </ul>
         <hr />
 

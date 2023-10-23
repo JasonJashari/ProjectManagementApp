@@ -57,7 +57,8 @@ router.post('/', checkAuth, asyncHandler(async (req, res, next) => {
         board.lists.push({ user: user, title: title });
         await board.save();
         return res.status(201).json({
-            message: 'List created!'
+            message: 'List created!',
+            title
         });
     } catch (error) {
         return res.status(400).json({

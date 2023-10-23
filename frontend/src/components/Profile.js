@@ -14,7 +14,7 @@ export const Profile = () => {
 
   return (
     <>
-      <section className='heading'>
+      <section className='title'>
         <h1>Profile</h1>
       </section>
 

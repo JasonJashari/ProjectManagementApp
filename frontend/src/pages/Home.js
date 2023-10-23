@@ -27,7 +27,9 @@ export default function Home() {
 
     return (
         <div>
-            <h1>Boards</h1>
+            <section className='title'>
+                <h1>Boards</h1>
+            </section>
             <ul>
                 <Link to='board/new'>
                     <div className='board new'>

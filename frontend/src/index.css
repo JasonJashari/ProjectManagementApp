@@ -38,6 +38,7 @@ h3 {
 hr {
   clear: both;
   margin-bottom: 10px;
+  visibility: hidden;
 }
 
 a.active {
@@ -85,6 +86,12 @@ a.active {
 
 .header ul li a svg {
   margin-right: 5px;
+}
+
+.title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 50px;
 }
 
 .heading {
@@ -214,6 +221,11 @@ div.new:hover {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.back {
+  position: absolute;
+  left: 20px;
 }
 
 .red {
